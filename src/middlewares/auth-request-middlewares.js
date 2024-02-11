@@ -1,6 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
-const { ErrorResponse } = require("../utils/common");
+const { ErrorResponse, SuccessResponse } = require("../utils/common");
 const AppError = require("../utils/errors/app-errors");
+const { UserService } = require("../services");
 
 function validateAuthRequest(req, res, next) {
   if (!req.body.email) {
@@ -23,4 +24,23 @@ function validateAuthRequest(req, res, next) {
   next();
 }
 
-module.exports = { validateAuthRequest };
+async function checkAuth(req, res, next) {
+  try {
+    const response = await UserService.isAuthenticated(
+      req.headers["x-access-token"]
+    );
+    if (response) {
+      req.user = response;
+      next();
+    }
+  } catch (error) {
+    ErrorResponse.error = new AppError(
+      "Failed to authenticate token",
+      StatusCodes.INTERNAL_SERVER_ERROR
+    );
+    ErrorResponse.message = "Cannot connect to the server";
+    return res.status(error.statusCode).json(ErrorResponse);
+  }
+}
+
+module.exports = { validateAuthRequest, checkAuth };

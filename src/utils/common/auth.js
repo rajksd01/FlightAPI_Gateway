@@ -26,7 +26,28 @@ async function createToken(input) {
   }
 }
 
+async function verifyToken(token) {
+  try {
+    const response = jwt.verify(token, JWT_SECRET_KEY);
+    console.log("VT:", response);
+    if (!response) {
+      throw new AppError("Token Invalid", StatusCodes.BAD_REQUEST);
+    }
+    return response;
+  } catch (error) {
+    if (error.name == "TokenExpiredError") {
+      throw new AppError("Token Expired", StatusCodes.BAD_REQUEST);
+    }
+    if (error instanceof AppError) throw error;
+    throw new AppError(
+      "Token Cannot Be Verified",
+      StatusCodes.INTERNAL_SERVER_ERROR
+    );
+  }
+}
+
 module.exports = {
   checkPassword,
   createToken,
+  verifyToken,
 };
