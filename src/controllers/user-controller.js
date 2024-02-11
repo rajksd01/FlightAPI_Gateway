@@ -3,8 +3,7 @@ const { UserService } = require("../services");
 const { SuccessResponse, ErrorResponse } = require("../utils/common");
 
 async function createUser(req, res) {
- 
-    try {
+  try {
     const user = await UserService.create({
       email: req.body.email,
       password: req.body.password,
@@ -18,6 +17,20 @@ async function createUser(req, res) {
   }
 }
 
+async function signIn(req, res) {
+  try {
+    const user = await UserService.signIn({
+      email: req.body.email,
+      password: req.body.password,
+    });
+    SuccessResponse.data = user;
+    return res.status(StatusCodes.CREATED).json(SuccessResponse);
+  } catch (error) {
+    console.log(error);
+    ErrorResponse.error = error;
+    return res.status(error.statusCode).json(ErrorResponse);
+  }
+}
 // delete a City
 
 async function deleteUser(req, res) {
@@ -74,8 +87,5 @@ async function updateCity(req, res) {
 
 module.exports = {
   createUser,
-  deleteUser,
-  getAllCities,
-  getCity,
-  updateCity,
+  signIn,
 };
