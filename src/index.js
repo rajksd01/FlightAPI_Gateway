@@ -3,10 +3,13 @@ const app = express();
 const { logConfig } = require("./config");
 
 const { ServerConfig } = require("../src/config");
-const routes = require("../src/routes");
+const apiRoutes = require("../src/routes");
 const { infoController } = require("./controllers");
 
-app.use("/api", routes);
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json())
+app.use("/api", apiRoutes);
+
 app.get("/", infoController.info);
 
 app.listen(ServerConfig.PORT, () => {
