@@ -6,6 +6,7 @@ const { logConfig } = require("./config");
 const { ServerConfig } = require("../src/config");
 const apiRoutes = require("../src/routes");
 const { infoController } = require("./controllers");
+const { createProxyMiddleware } = require("http-proxy-middleware");
 
 // setting up ratelimiter
 
@@ -22,6 +23,23 @@ app.use(limiter);
 app.use("/api", apiRoutes);
 
 app.get("/", infoController.info);
+// proxy for flights
+app.use(
+  "/flightservices",
+  createProxyMiddleware({
+    target: "http://localhost:3000",
+    changeOrigin: true,
+  })
+);
+//proxy  for bookings
+
+app.use(
+  "/bookingservices",
+  createProxyMiddleware({
+    target: "http://localhost:4000",
+    changeOrigin: true,
+  })
+);
 
 app.listen(ServerConfig.PORT, () => {
   console.log("listening on port " + ServerConfig.PORT);
