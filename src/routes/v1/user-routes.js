@@ -3,6 +3,8 @@ const { AuthRequestMiddlewares } = require("../../middlewares");
 const router = express.Router();
 const { UserController } = require("../../controllers");
 
+
+
 router.post(
   "/signup",
   AuthRequestMiddlewares.validateAuthRequest,
