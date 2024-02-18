@@ -38,7 +38,7 @@ async function addRoleToUser(req, res) {
       role: req.body.role,
       id: req.body.id,
     });
-    return user
+    return user;
   } catch (error) {
     console.log(error);
     ErrorResponse.error = error;
