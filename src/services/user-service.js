@@ -1,14 +1,20 @@
-const { UserRepository } = require("../repositories");
+const { UserRepository, RoleRepository } = require("../repositories");
 const AppError = require("../utils/errors/app-errors");
 const { StatusCodes } = require("http-status-codes");
-const { Auth } = require("../utils/common");
+const { Auth, Enums } = require("../utils/common");
 
 const userRepository = new UserRepository();
+const roleRepository = new RoleRepository();
 
 async function create(data) {
   try {
     const user = await userRepository.create(data);
-
+    const role = await roleRepository.getRoleByName(
+      Enums.USER_ROLES_ENUMS.CUSTOMER
+    );
+    console.log(role)
+    user.addRole(role);
+    console.log(user)
     return user;
   } catch (error) {
     console.log(error);
@@ -57,7 +63,7 @@ async function isAuthenticated(token) {
       throw new AppError("Token not found", StatusCodes.NOT_FOUND);
     }
     const response = await Auth.verifyToken(token);
-    console.log("response",response);
+    console.log("response", response);
     const user = await userRepository.get(response.id);
     if (!user) {
       throw new AppError("User not found", StatusCodes.NOT_FOUND);
